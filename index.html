@@ -861,7 +861,6 @@
         }
         
         function generateCode() {
-            // Implementation continues in next part...
             const code = generateItabsCode();
             document.getElementById('generatedCode').textContent = code;
             document.getElementById('codeOutput').style.display = 'block';
@@ -1048,7 +1047,7 @@
             code += '        });\n';
             code += '    });\n';
             code += '})();\n';
-            code += '</script>\n';
+            code += '<' + '/script>\n';
             
             return code;
         }
