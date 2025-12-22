@@ -1,1073 +1,559 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iTabs Generator - Create & Preview Your Interactive Display</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <title>iTabs - Share Your Holidays Differently</title>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
+```
+<!-- Social sharing meta tags -->
+<meta property="og:title" content="iTabs - Share Your Holidays Differently">
+<meta property="og:description" content="Photos first, story on demand. A new way to share travel memories.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1514395462725-fb4566210144?w=1200">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600&display=swap');
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(145deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .itabs-container {
+        width: 100%;
+        max-width: 400px;
+        background: #ffffff;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 
+            0 25px 80px rgba(0,0,0,0.5),
+            0 0 0 1px rgba(255,255,255,0.1);
+    }
+    
+    /* Carousel */
+    .carousel-wrapper {
+        position: relative;
+        width: 100%;
+        height: 320px;
+        overflow: hidden;
+        background: #000;
+    }
+    
+    .carousel-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .carousel-slide {
+        min-width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .slide-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 60px 20px 20px;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+        color: white;
+    }
+    
+    .slide-overlay span {
+        font-size: 0.9em;
+        opacity: 0.9;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Navigation dots */
+    .carousel-dots {
+        position: absolute;
+        bottom: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        z-index: 10;
+    }
+    
+    .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+    
+    /* The magic i button */
+    .i-button {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        width: 56px;
+        height: 56px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 20;
+        box-shadow: 
+            0 4px 20px rgba(0,0,0,0.3),
+            0 0 0 3px rgba(5, 206, 120, 0.5);
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 3px rgba(5, 206, 120, 0.5); }
+        50% { box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 8px rgba(5, 206, 120, 0.2); }
+    }
+    
+    .i-button:hover {
+        transform: scale(1.1);
+    }
+    
+    .i-button span {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        font-weight: 600;
+        color: #05CE78;
+    }
+    
+    /* Counter */
+    .slide-counter {
+        position: absolute;
+        bottom: 15px;
+        right: 85px;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        z-index: 10;
+    }
+    
+    /* Content below carousel */
+    .itabs-content {
+        padding: 24px;
+        text-align: center;
+    }
+    
+    .itabs-content h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5em;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+    }
+    
+    .itabs-content p {
+        color: #666;
+        font-size: 0.95em;
+    }
+    
+    .itabs-badge {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #05CE78 0%, #00A862 100%);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 500;
+    }
+    
+    /* Popup overlay */
+    .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.85);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .popup-overlay.active {
+        display: flex;
+    }
+    
+    .popup-content {
+        width: 100%;
+        max-width: 420px;
+        max-height: 85vh;
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
         }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
-        
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .form-panel, .preview-panel {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        .preview-panel {
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-        }
-        
-        h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-        
-        .subtitle {
-            color: #718096;
-            margin-bottom: 40px;
-            font-size: 1.1em;
-        }
-        
-        .preview-title {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 2em;
-            text-align: center;
-        }
-        
-        .form-section {
-            margin-bottom: 40px;
-            padding: 30px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            background: #f7fafc;
-        }
-        
-        .section-title {
-            color: #2d3748;
-            margin-bottom: 20px;
-            font-size: 1.4em;
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-        }
-        
-        .section-title::before {
-            content: '';
-            width: 6px;
-            height: 24px;
-            background: #667eea;
-            margin-right: 12px;
-            border-radius: 3px;
-        }
-        
-        label {
-            display: block;
-            color: #4a5568;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-        
-        input, textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s;
-            background: white;
-        }
-        
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-            line-height: 1.6;
-        }
-        
-        .helper-text {
-            color: #718096;
-            font-size: 0.85em;
-            margin-top: 5px;
-            margin-bottom: 15px;
-        }
-        
-        .security-note {
-            background: linear-gradient(135deg, #667eea10, #764ba210);
-            border: 1px solid #667eea30;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            color: #4a5568;
-        }
-        
-        .ai-generate-box {
-            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .ai-generate-box p {
-            color: white;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        
-        .ai-generate-box button {
-            background: white;
-            color: #19547b;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 1em;
-            transition: transform 0.3s;
-        }
-        
-        .ai-generate-box button:hover {
-            transform: scale(1.05);
-        }
-        
-        .buttons-row {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 18px 30px;
-            font-size: 1.1em;
-            font-weight: 700;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .generate-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-        
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-        }
-        
-        .clear-btn, .demo-btn {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-        
-        .clear-btn:hover, .demo-btn:hover {
-            background: #667eea10;
-        }
-        
-        #codeOutput {
-            background: #1a202c;
-            color: #48bb78;
-            padding: 30px;
-            border-radius: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            line-height: 1.6;
-            overflow-x: auto;
-            margin-top: 30px;
-            position: relative;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        
-        .copy-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 10px 20px;
-            background: #48bb78;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-        
-        .copy-btn.copied {
-            background: #38a169;
-        }
-        
-        .upload-area {
-            border: 3px dashed #cbd5e0;
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-            margin-bottom: 20px;
-        }
-        
-        .upload-area:hover {
-            border-color: #667eea;
-            background: #f7fafc;
-        }
-        
-        .upload-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-        
-        .upload-text {
-            color: #718096;
-            font-weight: 600;
-        }
-        
-        #imageInput {
-            display: none;
-        }
-        
-        .image-previews {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        
-        .preview-item {
-            position: relative;
-            width: 100px;
-            height: 100px;
-        }
-        
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .remove-image {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #e53e3e;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            font-size: 16px;
-            line-height: 1;
-        }
-        
-        .image-count {
-            margin-top: 10px;
-            color: #667eea;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-        
-        #livePreview {
-            min-height: 400px;
-            background: #f7fafc;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .preview-placeholder {
-            text-align: center;
-            color: #a0aec0;
-        }
-        
-        .preview-placeholder-icon {
-            font-size: 4em;
-            margin-bottom: 10px;
-        }
-        
-        .preview-placeholder-text {
-            font-size: 1.2em;
-            font-weight: 500;
-        }
-    </style>
+    }
+    
+    .popup-header {
+        background: linear-gradient(135deg, #05CE78 0%, #00A862 100%);
+        color: white;
+        padding: 24px;
+        position: relative;
+    }
+    
+    .popup-header h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4em;
+        margin-bottom: 6px;
+    }
+    
+    .popup-header p {
+        opacity: 0.9;
+        font-size: 0.95em;
+    }
+    
+    .close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 36px;
+        height: 36px;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+    
+    .close-btn:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    .popup-body {
+        padding: 24px;
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+    
+    .section {
+        margin-bottom: 24px;
+    }
+    
+    .section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .section h4 {
+        color: #05CE78;
+        font-size: 1.05em;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .section p {
+        color: #4a5568;
+        line-height: 1.7;
+        font-size: 0.95em;
+    }
+    
+    .popup-footer {
+        padding: 20px 24px 24px;
+        border-top: 1px solid #eee;
+    }
+    
+    .cta-button {
+        display: block;
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1em;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(26, 26, 46, 0.3);
+    }
+    
+    .powered-by {
+        text-align: center;
+        margin-top: 16px;
+        font-size: 0.85em;
+        color: #999;
+    }
+    
+    .powered-by a {
+        color: #05CE78;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    /* Photo gallery in popup */
+    .photo-preview {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 12px;
+    }
+    
+    .photo-preview img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .photo-preview .more-photos {
+        background: linear-gradient(135deg, #05CE78 0%, #00A862 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9em;
+    }
+</style>
+```
+
 </head>
 <body>
-    <div class="container">
-        <!-- LEFT PANEL: FORM -->
-        <div class="form-panel">
-            <h1>🎯 iTabs Generator</h1>
-            <p class="subtitle">Create beautiful interactive displays with live preview</p>
 
-            <!-- API Keys Section -->
-            <div class="form-section">
-                <div class="section-title">🔑 Setup - API Keys</div>
-                
-                <div class="security-note">
-                    <strong>🔒 Privacy:</strong> Your API keys stay in your browser only. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #667eea; font-weight: bold;">Get Gemini key →</a> <a href="https://api.imgbb.com/" target="_blank" style="color: #667eea; font-weight: bold;">Get ImgBB key →</a>
-                </div>
-                
-                <label>Gemini AI Key (for auto-descriptions)</label>
-                <input type="text" id="geminiApiKey" placeholder="Paste Gemini API key">
-                
-                <label>ImgBB Key (for image uploads)</label>
-                <input type="text" id="apiKey" placeholder="Paste ImgBB API key (or use URLs below)">
+<div class="itabs-container">
+    <!-- Photo Carousel -->
+    <div class="carousel-wrapper">
+        <div class="carousel-track" id="track">
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1514395462725-fb4566210144?w=800" alt="Melbourne skyline">
+                <div class="slide-overlay"><span>📍 Melbourne, Australia</span></div>
             </div>
-            
-            <!-- Images Section -->
-            <div class="form-section">
-                <div class="section-title">📸 Product Images</div>
-                
-                <p class="helper-text">Upload images OR paste URLs (1-5 images)</p>
-                    
-                <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Click to upload</div>
-                </div>
-                
-                <input type="file" id="imageInput" accept="image/*" multiple>
-                <div class="image-previews" id="imagePreviews"></div>
-                <div class="image-count" id="imageCount"></div>
-                
-                <div style="text-align: center; margin: 20px 0; color: #718096; font-weight: 600;">- OR -</div>
-                
-                <label>Image URLs</label>
-                <div id="urlFieldsContainer">
-                    <input type="url" id="imageUrl1" placeholder="https://example.com/image1.jpg" onchange="updatePreview()" style="margin-bottom: 10px;">
-                </div>
-                <button type="button" id="addUrlBtn" onclick="addUrlField()" style="width: 100%; padding: 10px; background: white; border: 2px solid #667eea; color: #667eea; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 5px;">+ Add Another Image</button>
-                <p class="helper-text" style="margin-top: 10px;" id="urlCounter">1 of 5 image fields shown</p>
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=800" alt="Coffee culture">
+                <div class="slide-overlay"><span>☕ The coffee is unreal</span></div>
             </div>
-            
-            <!-- Slideshow Settings Section -->
-            <div class="form-section">
-                <div class="section-title">⚙️ Slideshow Settings</div>
-                
-                <label>Enable Auto-Play?</label>
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <button type="button" id="autoplayYes" onclick="setAutoplay(true)" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">✅ Yes (Recommended)</button>
-                    <button type="button" id="autoplayNo" onclick="setAutoplay(false)" style="flex: 1; padding: 12px; background: white; color: #667eea; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: 600;">❌ No</button>
-                </div>
-                
-                <label>Auto-Play Speed</label>
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                    <input type="range" id="autoplaySpeed" min="2" max="10" value="5" oninput="updateSpeedDisplay()" style="flex: 1;">
-                    <span id="speedDisplay" style="min-width: 80px; font-weight: 600; color: #667eea;">5 seconds</span>
-                </div>
-                
-                <label>Overlay Text (optional - appears on first image)</label>
-                <input type="text" id="overlayText" placeholder="Leave empty for no overlay text" onchange="updatePreview()">
-                <p class="helper-text" style="margin-top: -15px;">Leave blank if you don't want any text on your images</p>
-                
-                <label>Text Size</label>
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                    <input type="range" id="overlaySize" min="12" max="60" value="30" oninput="updateSizeDisplay()" style="flex: 1;">
-                    <span id="sizeDisplay" style="min-width: 60px; font-weight: 600; color: #667eea;">30px</span>
-                </div>
-                
-                <label>Text Color</label>
-                <input type="color" id="overlayColor" value="#FFFFFF" onchange="updatePreview()" style="width: 100%; height: 50px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=800" alt="Street art">
+                <div class="slide-overlay"><span>🎨 Laneways everywhere</span></div>
             </div>
-            
-            <!-- Product Info Section -->
-            <div class="form-section">
-                <div class="section-title">🏷️ Product Information</div>
-                
-                <label>Product Name</label>
-                <input type="text" id="productName" placeholder="e.g., Premium Brake Pads" onchange="updatePreview()" required>
-                
-                <label>Your iTabs Generator URL (for the small iTabs button)</label>
-                <input type="url" id="generatorUrl" placeholder="https://yoursite.com/itabs-generator" value="https://itabs.ai">
-                <p class="helper-text" style="margin-top: -15px;">This is where people go when they click the small iTabs button (viral marketing!)</p>
-                
-                <label>Product Website URL (optional)</label>
-                <input type="url" id="buttonUrl" placeholder="https://yourwebsite.com/product" oninput="autoFillButtonText()">
-                
-                <label>Button Text (optional)</label>
-                <input type="text" id="buttonText" placeholder="Auto-fills from URL">
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1508317469940-e3de49ba902e?w=800" alt="Beach">
+                <div class="slide-overlay"><span>🌊 St Kilda vibes</span></div>
             </div>
-            
-            <!-- Popup Content Section -->
-            <div class="form-section">
-                <div class="section-title">💬 Popup Information</div>
-                
-                <div class="ai-generate-box">
-                    <p>✨ Let AI write this for you!</p>
-                    <button type="button" onclick="generateWithAI(event)">🤖 Generate with Gemini AI</button>
-                </div>
-                
-                <label>What is it?</label>
-                <textarea id="whatIsIt" placeholder="Describe what this product is in simple terms..." onchange="updatePreview()"></textarea>
-                
-                <label>Why do I need it?</label>
-                <textarea id="whyNeedIt" placeholder="Explain why someone would want this..." onchange="updatePreview()"></textarea>
-                
-                <label>How does it work?</label>
-                <textarea id="howItWorks" placeholder="Describe how the product functions..." onchange="updatePreview()"></textarea>
-                
-                <label>What makes it different?</label>
-                <textarea id="whatMakesDifferent" placeholder="What sets this apart from others..." onchange="updatePreview()"></textarea>
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800" alt="Night city">
+                <div class="slide-overlay"><span>✨ City lights</span></div>
             </div>
-            
-            <!-- Generate Buttons -->
-            <div class="buttons-row">
-                <button type="button" class="demo-btn" onclick="loadDemoData()">📝 Load Demo</button>
-                <button type="button" class="clear-btn" onclick="clearForm()">🗑️ Clear Form</button>
-                <button type="button" class="generate-btn" onclick="generateCode()">⚡ Generate Code</button>
-            </div>
-            
-            <!-- Code Output -->
-            <div id="codeOutput" style="display: none;">
-                <button class="copy-btn" onclick="copyCode()">📋 Copy Code</button>
-                <pre id="generatedCode"></pre>
+        </div>
+
+```
+    <div class="carousel-dots" id="dots">
+        <div class="dot active" onclick="goToSlide(0)"></div>
+        <div class="dot" onclick="goToSlide(1)"></div>
+        <div class="dot" onclick="goToSlide(2)"></div>
+        <div class="dot" onclick="goToSlide(3)"></div>
+        <div class="dot" onclick="goToSlide(4)"></div>
+    </div>
+    
+    <div class="slide-counter" id="counter">1/5</div>
+    
+    <div class="i-button" onclick="openPopup()">
+        <span>i</span>
+    </div>
+</div>
+
+<div class="itabs-content">
+    <h2>Share Holidays Differently</h2>
+    <p>Swipe photos • Tap <strong style="color: #05CE78;">i</strong> for the full story</p>
+    <div class="itabs-badge">✨ Made with iTabs</div>
+</div>
+```
+
+</div>
+
+<!-- The Popup -->
+
+<div class="popup-overlay" id="popup" onclick="closePopup(event)">
+    <div class="popup-content" onclick="event.stopPropagation()">
+        <div class="popup-header">
+            <button class="close-btn" onclick="closePopup()">&times;</button>
+            <h3>What is iTabs?</h3>
+            <p>A new way to share your story</p>
+        </div>
+
+```
+    <div class="popup-body">
+        <div class="section">
+            <h4>📸 The Problem with Sharing</h4>
+            <p>Social media forces you to pick ONE photo. Or dump 47 photos nobody scrolls through. Captions get ignored. Your trip becomes just... another post.</p>
+        </div>
+        
+        <div class="section">
+            <h4>💡 How iTabs Works</h4>
+            <p><strong>Photos first</strong> - your best 5 shots auto-play, grabbing attention. Then the little <strong style="color: #05CE78;">i</strong> button lets people choose to learn more. They tap, they get the full story, more photos, the details. They're already engaged because THEY chose to open it.</p>
+            <div class="photo-preview">
+                <img src="https://images.unsplash.com/photo-1514395462725-fb4566210144?w=200" alt="">
+                <img src="https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=200" alt="">
+                <img src="https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=200" alt="">
+                <img src="https://images.unsplash.com/photo-1508317469940-e3de49ba902e?w=200" alt="">
+                <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=200" alt="">
+                <div class="more-photos">+10 more</div>
             </div>
         </div>
         
-        <!-- RIGHT PANEL: LIVE PREVIEW -->
-        <div class="preview-panel">
-            <h2 class="preview-title">👁️ Live Preview</h2>
-            <div id="livePreview">
-                <div class="preview-placeholder">
-                    <div class="preview-placeholder-icon">📱</div>
-                    <div class="preview-placeholder-text">Your iTabs will appear here</div>
-                </div>
-            </div>
+        <div class="section">
+            <h4>🎄 The Holiday Version</h4>
+            <p>Create an iTabs for your trip. Add photos as you go. Share ONE link on socials. Friends tap through your highlights, then hit the <strong style="color: #05CE78;">i</strong> to see the full album with stories. It's like a mini travel blog in one click.</p>
+        </div>
+        
+        <div class="section">
+            <h4>🚀 Beyond Holidays</h4>
+            <p>This same format helps GoFundMe campaigns explain their cause, helps businesses show confusing products, helps anyone who needs to say "here's the quick version, tap for details." Jon's building this from Perth. You're seeing the prototype.</p>
         </div>
     </div>
     
-    <script>
-        let selectedImages = [];
-        let autoplayEnabled = true;
-        let urlFieldCount = 1; // Track how many URL fields are shown
+    <div class="popup-footer">
+        <button class="cta-button" onclick="alert('Generator coming soon! Jon is building it this week.')">
+            Try Creating Your Own →
+        </button>
+        <p class="powered-by">Built by <a href="https://itabs.ai" target="_blank">iTabs.ai</a> 🇦🇺</p>
+    </div>
+</div>
+```
+
+</div>
+
+<script>
+    let currentSlide = 0;
+    const totalSlides = 5;
+    let autoplayInterval;
+    
+    function updateCarousel() {
+        const track = document.getElementById('track');
+        const counter = document.getElementById('counter');
+        const dots = document.querySelectorAll('.dot');
         
-        const uploadArea = document.getElementById('uploadArea');
-        const imageInput = document.getElementById('imageInput');
-        const imagePreviews = document.getElementById('imagePreviews');
-        const imageCount = document.getElementById('imageCount');
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        counter.textContent = `${currentSlide + 1}/${totalSlides}`;
         
-        // Load saved API keys on page load
-        window.addEventListener('load', () => {
-            const savedGeminiKey = localStorage.getItem('geminiApiKey');
-            const savedImgbbKey = localStorage.getItem('imgbbApiKey');
-            
-            if (savedGeminiKey) {
-                document.getElementById('geminiApiKey').value = savedGeminiKey;
-            }
-            if (savedImgbbKey) {
-                document.getElementById('apiKey').value = savedImgbbKey;
-            }
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlide);
         });
-        
-        // Save API keys when they change
-        document.getElementById('geminiApiKey').addEventListener('input', (e) => {
-            localStorage.setItem('geminiApiKey', e.target.value);
-        });
-        
-        document.getElementById('apiKey').addEventListener('input', (e) => {
-            localStorage.setItem('imgbbApiKey', e.target.value);
-        });
-        
-        function addUrlField() {
-            if (urlFieldCount >= 5) {
-                alert('Maximum 5 images allowed');
-                return;
+    }
+    
+    function goToSlide(index) {
+        currentSlide = index;
+        updateCarousel();
+        resetAutoplay();
+    }
+    
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+    }
+    
+    function resetAutoplay() {
+        clearInterval(autoplayInterval);
+        autoplayInterval = setInterval(nextSlide, 3500);
+    }
+    
+    function openPopup() {
+        document.getElementById('popup').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closePopup(event) {
+        if (!event || event.target === document.getElementById('popup')) {
+            document.getElementById('popup').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.querySelector('.carousel-wrapper').addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.querySelector('.carousel-wrapper').addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0 && currentSlide < totalSlides - 1) {
+                currentSlide++;
+            } else if (diff < 0 && currentSlide > 0) {
+                currentSlide--;
             }
-            
-            urlFieldCount++;
-            const container = document.getElementById('urlFieldsContainer');
-            const newField = document.createElement('input');
-            newField.type = 'url';
-            newField.id = 'imageUrl' + urlFieldCount;
-            newField.placeholder = 'https://example.com/image' + urlFieldCount + '.jpg';
-            newField.onchange = updatePreview;
-            newField.style.marginBottom = '10px';
-            container.appendChild(newField);
-            
-            document.getElementById('urlCounter').textContent = urlFieldCount + ' of 5 image fields shown';
+            updateCarousel();
+            resetAutoplay();
         }
-        
-        function setAutoplay(enabled) {
-            autoplayEnabled = enabled;
-            document.getElementById('autoplayYes').style.background = enabled ? 
-                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white';
-            document.getElementById('autoplayYes').style.color = enabled ? 'white' : '#667eea';
-            document.getElementById('autoplayYes').style.border = enabled ? 'none' : '2px solid #e2e8f0';
-            
-            document.getElementById('autoplayNo').style.background = !enabled ? 
-                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white';
-            document.getElementById('autoplayNo').style.color = !enabled ? 'white' : '#667eea';
-            document.getElementById('autoplayNo').style.border = !enabled ? 'none' : '2px solid #e2e8f0';
-            
-            updatePreview();
-        }
-        
-        function updateSpeedDisplay() {
-            const speed = document.getElementById('autoplaySpeed').value;
-            document.getElementById('speedDisplay').textContent = speed + ' seconds';
-            updatePreview();
-        }
-        
-        function updateSizeDisplay() {
-            const size = document.getElementById('overlaySize').value;
-            document.getElementById('sizeDisplay').textContent = size + 'px';
-            updatePreview();
-        }
-        
-        function autoFillButtonText() {
-            const url = document.getElementById('buttonUrl').value;
-            const buttonText = document.getElementById('buttonText');
-            
-            if (!buttonText.value && url) {
-                try {
-                    const urlObj = new URL(url);
-                    const domain = urlObj.hostname.replace('www.', '');
-                    buttonText.value = 'Visit ' + domain;
-                } catch (e) {
-                    // Invalid URL, ignore
-                }
-            }
-        }
-        
-        function clearForm() {
-            document.querySelectorAll('input[type="text"], input[type="url"], textarea').forEach(el => {
-                if (el.id !== 'geminiApiKey' && el.id !== 'apiKey') {
-                    el.value = '';
-                }
-            });
-            selectedImages = [];
-            imagePreviews.innerHTML = '';
-            imageCount.textContent = '';
-            document.getElementById('generatorUrl').value = 'https://itabs.ai';
-            updatePreview();
-        }
-        
-        function loadDemoData() {
-            // Demo data for crowdfunding campaign
-            document.getElementById('productName').value = 'Help Sarah\'s Medical Fund';
-            document.getElementById('imageUrl1').value = 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=500';
-            
-            document.getElementById('overlayText').value = 'Every Dollar Counts';
-            document.getElementById('buttonUrl').value = 'https://gofundme.com/sarah-medical-fund';
-            document.getElementById('buttonText').value = 'Donate Now';
-            
-            document.getElementById('whatIsIt').value = 'Sarah is a 7-year-old girl fighting a rare condition that requires specialized treatment. Her family needs help covering medical expenses not covered by insurance.';
-            
-            document.getElementById('whyNeedIt').value = 'The treatment costs $50,000 and insurance only covers 40%. Without this treatment, Sarah faces permanent complications. Your donation directly helps save her future.';
-            
-            document.getElementById('howItWorks').value = 'Donations go directly to the hospital for treatment costs. Every $100 covers one day of specialized care. We provide weekly updates on Sarah\'s progress.';
-            
-            document.getElementById('whatMakesDifferent').value = 'This is time-critical - treatment must begin by January 2025. All funds are verified and go directly to medical providers. Sarah\'s case has been featured in local news for awareness.';
-            
-            updatePreview();
-        }
-        
-        async function generateWithAI(event) {
-            const btn = event.target;
-            const originalText = btn.textContent;
-            
-            const productName = document.getElementById('productName').value;
-            const geminiKey = document.getElementById('geminiApiKey').value;
-            
-            if (!productName) {
-                alert('Please enter a product name first!');
-                return;
-            }
-            
-            if (!geminiKey) {
-                alert('Please enter your Gemini API key first!');
-                return;
-            }
-            
-            btn.textContent = '⏳ Generating...';
-            btn.disabled = true;
-            
-            try {
-                const prompt = `Create compelling descriptions for a crowdfunding campaign or product called "${productName}". 
-                Write in a persuasive but honest tone. Format as JSON with these exact keys:
-                {
-                    "whatIsIt": "2-3 sentences explaining what this is",
-                    "whyNeedIt": "2-3 sentences on why someone would want/need this",
-                    "howItWorks": "2-3 sentences on how it works or how funds are used",
-                    "whatMakesDifferent": "2-3 sentences on what makes this special or urgent"
-                }`;
-                
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: prompt
-                            }]
-                        }]
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-                    const text = data.candidates[0].content.parts[0].text;
-                    const jsonMatch = text.match(/\{[\s\S]*\}/);
-                    
-                    if (jsonMatch) {
-                        const result = JSON.parse(jsonMatch[0]);
-                        
-                        document.getElementById('whatIsIt').value = result.whatIsIt || '';
-                        document.getElementById('whyNeedIt').value = result.whyNeedIt || '';
-                        document.getElementById('howItWorks').value = result.howItWorks || '';
-                        document.getElementById('whatMakesDifferent').value = result.whatMakesDifferent || '';
-                        
-                        updatePreview();
-                        
-                        btn.textContent = '✅ Generated!';
-                        setTimeout(() => {
-                            btn.textContent = originalText;
-                            btn.disabled = false;
-                        }, 2000);
-                    } else {
-                        throw new Error('Could not parse AI response');
-                    }
-                } else {
-                    throw new Error(data.error?.message || 'Invalid API response');
-                }
-                
-            } catch (error) {
-                alert('Error generating content: ' + error.message);
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
-        }
-        
-        // Handle file uploads
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, e => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
-        
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => uploadArea.style.borderColor = '#667eea');
-        });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => uploadArea.style.borderColor = '#cbd5e0');
-        });
-        
-        uploadArea.addEventListener('drop', e => {
-            handleFiles(e.dataTransfer.files);
-        });
-        
-        imageInput.addEventListener('change', e => {
-            handleFiles(e.target.files);
-        });
-        
-        function handleFiles(files) {
-            selectedImages = Array.from(files).slice(0, 5);
-            displayPreviews();
-            updatePreview();
-        }
-        
-        function displayPreviews() {
-            imagePreviews.innerHTML = '';
-            selectedImages.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const div = document.createElement('div');
-                    div.className = 'preview-item';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview ${index + 1}">
-                        <button class="remove-image" onclick="removeImage(${index})">&times;</button>
-                    `;
-                    imagePreviews.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            });
-            imageCount.textContent = `${selectedImages.length} image${selectedImages.length !== 1 ? 's' : ''} selected`;
-        }
-        
-        function removeImage(index) {
-            selectedImages.splice(index, 1);
-            displayPreviews();
-            updatePreview();
-        }
-        
-        // Update live preview
-        function updatePreview() {
-            const productName = document.getElementById('productName').value || 'Your Product';
-            const overlayText = document.getElementById('overlayText').value || ''; // Now optional
-            const overlaySize = document.getElementById('overlaySize').value || '30';
-            const overlayColor = document.getElementById('overlayColor').value || '#FFFFFF';
-            
-            // Get images from either uploads or URLs (dynamic number of fields)
-            let imageUrls = [];
-            
-            // Check URL inputs - now dynamic
-            for (let i = 1; i <= urlFieldCount; i++) {
-                const urlField = document.getElementById('imageUrl' + i);
-                if (urlField) {
-                    const url = urlField.value.trim();
-                    if (url) imageUrls.push(url);
-                }
-            }
-            
-            // If no URLs, use uploaded images
-            if (imageUrls.length === 0 && selectedImages.length > 0) {
-                selectedImages.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = e => {
-                        imageUrls.push(e.target.result);
-                        if (imageUrls.length === selectedImages.length) {
-                            renderPreview(imageUrls, productName, overlayText, overlaySize, overlayColor);
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                });
-            } else if (imageUrls.length > 0) {
-                renderPreview(imageUrls, productName, overlayText, overlaySize, overlayColor);
-            } else {
-                // Show placeholder
-                document.getElementById('livePreview').innerHTML = `
-                    <div class="preview-placeholder">
-                        <div class="preview-placeholder-icon">📱</div>
-                        <div class="preview-placeholder-text">Add images to see preview</div>
-                    </div>
-                `;
-            }
-        }
-        
-        function renderPreview(images, productName, overlayText, overlaySize, overlayColor) {
-            const whatIsIt = document.getElementById('whatIsIt').value || 'Description coming soon...';
-            const whyNeedIt = document.getElementById('whyNeedIt').value || 'Benefits coming soon...';
-            const howItWorks = document.getElementById('howItWorks').value || 'Details coming soon...';
-            const whatMakesDifferent = document.getElementById('whatMakesDifferent').value || 'Features coming soon...';
-            
-            const uniqueId = 'preview-' + Date.now();
-            
-            // Build carousel HTML
-            let carouselHTML = '';
-            images.forEach((img, index) => {
-                carouselHTML += `
-                    <div class="${uniqueId}-slide" style="display: ${index === 0 ? 'block' : 'none'};">
-                        <img src="${img}" alt="Slide ${index + 1}" style="width: 100%; height: 400px; object-fit: cover; border-radius: 12px;">
-                        ${overlayText && index === 0 ? `
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                                <h2 style="color: ${overlayColor}; font-size: ${overlaySize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); margin: 0;">${overlayText}</h2>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            
-            // Build dots if multiple images
-            let dotsHTML = '';
-            if (images.length > 1) {
-                dotsHTML = '<div style="text-align: center; padding: 10px;">';
-                images.forEach((_, index) => {
-                    dotsHTML += `<span class="${uniqueId}-dot" data-slide="${index}" style="height: 12px; width: 12px; margin: 0 5px; background-color: ${index === 0 ? '#667eea' : '#bbb'}; border-radius: 50%; display: inline-block; cursor: pointer;"></span>`;
-                });
-                dotsHTML += '</div>';
-            }
-            
-            const previewHTML = `
-                <div style="position: relative; width: 100%; max-width: 500px; margin: 0 auto;">
-                    <div style="position: relative;">
-                        ${carouselHTML}
-                        ${dotsHTML}
-                        <button style="position: absolute; bottom: 20px; right: 20px; background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 14px;" onclick="alert('Info popup would open here!')">
-                            ℹ️ Learn More
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('livePreview').innerHTML = previewHTML;
-            
-            // Add carousel functionality for preview
-            if (images.length > 1) {
-                let currentSlide = 0;
-                
-                // Auto-advance if enabled
-                if (autoplayEnabled) {
-                    setInterval(() => {
-                        currentSlide = (currentSlide + 1) % images.length;
-                        updateCarousel();
-                    }, (document.getElementById('autoplaySpeed').value || 5) * 1000);
-                }
-                
-                function updateCarousel() {
-                    document.querySelectorAll(`.${uniqueId}-slide`).forEach((slide, index) => {
-                        slide.style.display = index === currentSlide ? 'block' : 'none';
-                    });
-                    document.querySelectorAll(`.${uniqueId}-dot`).forEach((dot, index) => {
-                        dot.style.backgroundColor = index === currentSlide ? '#667eea' : '#bbb';
-                    });
-                }
-                
-                // Add click handlers to dots
-                document.querySelectorAll(`.${uniqueId}-dot`).forEach(dot => {
-                    dot.addEventListener('click', () => {
-                        currentSlide = parseInt(dot.getAttribute('data-slide'));
-                        updateCarousel();
-                    });
-                });
-            }
-        }
-        
-        function generateCode() {
-            const code = generateItabsCode();
-            document.getElementById('generatedCode').textContent = code;
-            document.getElementById('codeOutput').style.display = 'block';
-        }
-        
-        function generateItabsCode() {
-            // Get form values
-            const productName = document.getElementById('productName').value || 'Product';
-            const overlayText = document.getElementById('overlayText').value || '';
-            const overlaySize = document.getElementById('overlaySize').value || '30';
-            const overlayColor = document.getElementById('overlayColor').value || '#FFFFFF';
-            const generatorUrl = document.getElementById('generatorUrl').value || 'https://itabs.ai';
-            const buttonUrl = document.getElementById('buttonUrl').value || '#';
-            const buttonText = document.getElementById('buttonText').value || 'Learn More';
-            
-            const whatIsIt = document.getElementById('whatIsIt').value || '';
-            const whyNeedIt = document.getElementById('whyNeedIt').value || '';
-            const howItWorks = document.getElementById('howItWorks').value || '';
-            const whatMakesDifferent = document.getElementById('whatMakesDifferent').value || '';
-            
-            // Get images
-            let images = [];
-            for (let i = 1; i <= urlFieldCount; i++) {
-                const urlField = document.getElementById('imageUrl' + i);
-                if (urlField && urlField.value) {
-                    images.push(urlField.value);
-                }
-            }
-            
-            if (images.length === 0) {
-                alert('Please add at least one image URL');
-                return '';
-            }
-            
-            // Generate unique ID for this instance
-            const uniqueId = 'itabs-' + Date.now();
-            
-            // Build the complete HTML/CSS/JS code
-            let code = '<!-- iTabs Interactive Display - Generated by iTabs.ai -->\n';
-            code += '<div id="' + uniqueId + '-container" style="position: relative; width: 100%; max-width: 600px; margin: 0 auto;">\n';
-            
-            // Image carousel
-            images.forEach((img, index) => {
-                code += '    <div class="' + uniqueId + '-slide" style="display: ' + (index === 0 ? 'block' : 'none') + ';">\n';
-                code += '        <img src="' + img + '" alt="' + productName + ' - Image ' + (index + 1) + '" style="width: 100%; height: auto; display: block;">\n';
-                if (overlayText && index === 0) {
-                    code += '        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 90%;">\n';
-                    code += '            <h2 style="color: ' + overlayColor + '; font-size: ' + overlaySize + 'px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); margin: 0;">' + overlayText + '</h2>\n';
-                    code += '        </div>\n';
-                }
-                code += '    </div>\n';
-            });
-            
-            // Navigation dots
-            if (images.length > 1) {
-                code += '    <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.9);">\n';
-                images.forEach((_, index) => {
-                    code += '        <span class="' + uniqueId + '-dot" data-slide="' + index + '" style="height: 12px; width: 12px; margin: 0 5px; background-color: ' + (index === 0 ? '#667eea' : '#bbb') + '; border-radius: 50%; display: inline-block; cursor: pointer;"></span>\n';
-                });
-                code += '    </div>\n';
-            }
-            
-            // Info button
-            code += '    <button id="' + uniqueId + '-info-btn" style="position: absolute; bottom: 20px; right: 20px; background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">ℹ️ Learn More</button>\n';
-            
-            // iTabs watermark
-            code += '    <a href="' + generatorUrl + '" target="_blank" style="position: absolute; bottom: 20px; left: 20px; background: rgba(255,255,255,0.9); color: #667eea; text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: 600;">iTabs</a>\n';
-            
-            code += '</div>\n\n';
-            
-            // Popup HTML
-            code += '<!-- Popup Modal -->\n';
-            code += '<div id="' + uniqueId + '-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999;">\n';
-            code += '    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; border-radius: 20px; padding: 30px;">\n';
-            code += '        <button id="' + uniqueId + '-close" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 30px; cursor: pointer; color: #666;">×</button>\n';
-            code += '        <h2 style="color: #667eea; margin-bottom: 20px;">' + productName + '</h2>\n';
-            
-            // Tabs
-            code += '        <div style="border-bottom: 2px solid #e2e8f0; margin-bottom: 20px;">\n';
-            code += '            <button class="' + uniqueId + '-tab" data-tab="what" style="background: none; border: none; padding: 10px 20px; font-weight: 600; color: #667eea; cursor: pointer; border-bottom: 3px solid #667eea;">What is it?</button>\n';
-            code += '            <button class="' + uniqueId + '-tab" data-tab="why" style="background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer;">Why?</button>\n';
-            code += '            <button class="' + uniqueId + '-tab" data-tab="how" style="background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer;">How?</button>\n';
-            code += '            <button class="' + uniqueId + '-tab" data-tab="different" style="background: none; border: none; padding: 10px 20px; font-weight: 600; color: #666; cursor: pointer;">Different?</button>\n';
-            code += '        </div>\n';
-            
-            // Tab content
-            code += '        <div id="' + uniqueId + '-tab-what" class="' + uniqueId + '-tab-content" style="display: block;">\n';
-            code += '            <p style="line-height: 1.6; color: #4a5568;">' + whatIsIt + '</p>\n';
-            code += '        </div>\n';
-            code += '        <div id="' + uniqueId + '-tab-why" class="' + uniqueId + '-tab-content" style="display: none;">\n';
-            code += '            <p style="line-height: 1.6; color: #4a5568;">' + whyNeedIt + '</p>\n';
-            code += '        </div>\n';
-            code += '        <div id="' + uniqueId + '-tab-how" class="' + uniqueId + '-tab-content" style="display: none;">\n';
-            code += '            <p style="line-height: 1.6; color: #4a5568;">' + howItWorks + '</p>\n';
-            code += '        </div>\n';
-            code += '        <div id="' + uniqueId + '-tab-different" class="' + uniqueId + '-tab-content" style="display: none;">\n';
-            code += '            <p style="line-height: 1.6; color: #4a5568;">' + whatMakesDifferent + '</p>\n';
-            code += '        </div>\n';
-            
-            // Action button
-            if (buttonUrl) {
-                code += '        <a href="' + buttonUrl + '" target="_blank" style="display: inline-block; margin-top: 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600;">' + buttonText + '</a>\n';
-            }
-            
-            code += '    </div>\n';
-            code += '</div>\n\n';
-            
-            // JavaScript (wrapped in IIFE for isolation)
-            code += '<script>\n';
-            code += '(function() {\n';
-            code += '    var currentSlide = 0;\n';
-            code += '    var slides = document.querySelectorAll(".' + uniqueId + '-slide");\n';
-            code += '    var dots = document.querySelectorAll(".' + uniqueId + '-dot");\n';
-            code += '    \n';
-            code += '    function showSlide(n) {\n';
-            code += '        currentSlide = n;\n';
-            code += '        if (currentSlide >= slides.length) currentSlide = 0;\n';
-            code += '        if (currentSlide < 0) currentSlide = slides.length - 1;\n';
-            code += '        \n';
-            code += '        slides.forEach(function(slide) { slide.style.display = "none"; });\n';
-            code += '        dots.forEach(function(dot) { dot.style.backgroundColor = "#bbb"; });\n';
-            code += '        \n';
-            code += '        slides[currentSlide].style.display = "block";\n';
-            code += '        if (dots[currentSlide]) dots[currentSlide].style.backgroundColor = "#667eea";\n';
-            code += '    }\n';
-            code += '    \n';
-            
-            // Auto-play if enabled
-            if (autoplayEnabled && images.length > 1) {
-                const speed = document.getElementById('autoplaySpeed').value || 5;
-                code += '    // Auto-play carousel\n';
-                code += '    setInterval(function() {\n';
-                code += '        showSlide(currentSlide + 1);\n';
-                code += '    }, ' + (speed * 1000) + ');\n';
-                code += '    \n';
-            }
-            
-            // Dot click handlers
-            code += '    dots.forEach(function(dot) {\n';
-            code += '        dot.addEventListener("click", function() {\n';
-            code += '            showSlide(parseInt(this.getAttribute("data-slide")));\n';
-            code += '        });\n';
-            code += '    });\n';
-            code += '    \n';
-            
-            // Popup handlers
-            code += '    // Popup functionality\n';
-            code += '    document.getElementById("' + uniqueId + '-info-btn").addEventListener("click", function() {\n';
-            code += '        document.getElementById("' + uniqueId + '-popup").style.display = "block";\n';
-            code += '    });\n';
-            code += '    \n';
-            code += '    document.getElementById("' + uniqueId + '-close").addEventListener("click", function() {\n';
-            code += '        document.getElementById("' + uniqueId + '-popup").style.display = "none";\n';
-            code += '    });\n';
-            code += '    \n';
-            code += '    document.getElementById("' + uniqueId + '-popup").addEventListener("click", function(e) {\n';
-            code += '        if (e.target.id === "' + uniqueId + '-popup") {\n';
-            code += '            this.style.display = "none";\n';
-            code += '        }\n';
-            code += '    });\n';
-            code += '    \n';
-            
-            // Tab functionality
-            code += '    // Tab functionality\n';
-            code += '    var tabs = document.querySelectorAll(".' + uniqueId + '-tab");\n';
-            code += '    var tabContents = document.querySelectorAll(".' + uniqueId + '-tab-content");\n';
-            code += '    \n';
-            code += '    tabs.forEach(function(tab) {\n';
-            code += '        tab.addEventListener("click", function() {\n';
-            code += '            var tabName = this.getAttribute("data-tab");\n';
-            code += '            \n';
-            code += '            tabs.forEach(function(t) {\n';
-            code += '                t.style.color = "#666";\n';
-            code += '                t.style.borderBottom = "none";\n';
-            code += '            });\n';
-            code += '            \n';
-            code += '            tabContents.forEach(function(content) {\n';
-            code += '                content.style.display = "none";\n';
-            code += '            });\n';
-            code += '            \n';
-            code += '            this.style.color = "#667eea";\n';
-            code += '            this.style.borderBottom = "3px solid #667eea";\n';
-            code += '            document.getElementById("' + uniqueId + '-tab-" + tabName).style.display = "block";\n';
-            code += '        });\n';
-            code += '    });\n';
-            code += '})();\n';
-            code += '<' + '/script>\n';
-            
-            return code;
-        }
-        
-        function copyCode() {
-            const code = document.getElementById('generatedCode').textContent;
-            const btn = document.querySelector('.copy-btn');
-            
-            navigator.clipboard.writeText(code).then(() => {
-                btn.textContent = '✅ Copied!';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = '📋 Copy Code';
-                    btn.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-                alert('Copy failed! Please select and copy the code manually.');
-            });
-        }
-    </script>
+    }
+    
+    // Start autoplay
+    autoplayInterval = setInterval(nextSlide, 3500);
+    
+    // Keyboard support
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closePopup();
+    });
+</script>
+
 </body>
 </html>
