@@ -364,6 +364,148 @@
         color: white;
         font-weight: 600;
         font-size: 0.9em;
+        cursor: pointer;
+    }
+    
+    .photo-preview img {
+        cursor: pointer;
+        transition: transform 0.2s, opacity 0.2s;
+    }
+    
+    .photo-preview img:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+    
+    /* Lightbox for large photo view */
+    .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .lightbox.active {
+        display: flex;
+    }
+    
+    .lightbox-content {
+        position: relative;
+        max-width: 95%;
+        max-height: 90vh;
+        animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    @keyframes zoomIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .lightbox-content img {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    
+    .lightbox-caption {
+        text-align: center;
+        color: white;
+        margin-top: 16px;
+        font-size: 1em;
+        opacity: 0.9;
+    }
+    
+    .lightbox-close {
+        position: absolute;
+        top: -50px;
+        right: 0;
+        width: 44px;
+        height: 44px;
+        background: rgba(255,255,255,0.15);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+    
+    .lightbox-close:hover {
+        background: rgba(255,255,255,0.25);
+    }
+    
+    .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background: rgba(255,255,255,0.15);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+    
+    .lightbox-nav:hover {
+        background: rgba(255,255,255,0.25);
+    }
+    
+    .lightbox-nav.prev {
+        left: -70px;
+    }
+    
+    .lightbox-nav.next {
+        right: -70px;
+    }
+    
+    .lightbox-counter {
+        position: absolute;
+        bottom: -45px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 0.9em;
+        opacity: 0.7;
+    }
+    
+    @media (max-width: 600px) {
+        .lightbox-nav.prev {
+            left: 10px;
+            bottom: -60px;
+            top: auto;
+            transform: none;
+        }
+        
+        .lightbox-nav.next {
+            right: 10px;
+            bottom: -60px;
+            top: auto;
+            transform: none;
+        }
     }
 </style>
 ```
@@ -442,13 +584,14 @@
         <div class="section">
             <h4>💡 How iTabs Works</h4>
             <p><strong>Photos first</strong> - your best 5 shots auto-play, grabbing attention. Then the little <strong style="color: #05CE78;">i</strong> button lets people choose to learn more. They tap, they get the full story, more photos, the details. They're already engaged because THEY chose to open it.</p>
+            <p style="margin-top: 12px; font-size: 0.85em; color: #718096;">👆 Tap any photo to view large</p>
             <div class="photo-preview">
-                <img src="https://images.unsplash.com/photo-1514395462725-fb4566210144?w=200" alt="">
-                <img src="https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=200" alt="">
-                <img src="https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=200" alt="">
-                <img src="https://images.unsplash.com/photo-1508317469940-e3de49ba902e?w=200" alt="">
-                <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=200" alt="">
-                <div class="more-photos">+10 more</div>
+                <img src="https://images.unsplash.com/photo-1514395462725-fb4566210144?w=200" alt="Melbourne skyline" onclick="openLightbox(0)" data-full="https://images.unsplash.com/photo-1514395462725-fb4566210144?w=1200" data-caption="📍 Melbourne skyline at sunset">
+                <img src="https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=200" alt="Coffee" onclick="openLightbox(1)" data-full="https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=1200" data-caption="☕ Melbourne's famous coffee culture">
+                <img src="https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=200" alt="Street art" onclick="openLightbox(2)" data-full="https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=1200" data-caption="🎨 Hosier Lane street art">
+                <img src="https://images.unsplash.com/photo-1508317469940-e3de49ba902e?w=200" alt="Beach" onclick="openLightbox(3)" data-full="https://images.unsplash.com/photo-1508317469940-e3de49ba902e?w=1200" data-caption="🌊 St Kilda Beach">
+                <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=200" alt="Night" onclick="openLightbox(4)" data-full="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200" data-caption="✨ City lights at night">
+                <div class="more-photos" onclick="openLightbox(0)">+10 more</div>
             </div>
         </div>
         
@@ -472,6 +615,19 @@
 </div>
 ```
 
+</div>
+
+<!-- Lightbox for large photos -->
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav prev" onclick="prevLightboxPhoto()">‹</button>
+        <button class="lightbox-nav next" onclick="nextLightboxPhoto()">›</button>
+        <img id="lightbox-img" src="" alt="">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
 </div>
 
 <script>
@@ -551,8 +707,57 @@
     
     // Keyboard support
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closePopup();
+        if (e.key === 'Escape') {
+            closeLightbox();
+            closePopup();
+        }
+        if (e.key === 'ArrowLeft') prevLightboxPhoto();
+        if (e.key === 'ArrowRight') nextLightboxPhoto();
     });
+    
+    // Lightbox functionality
+    const galleryPhotos = [
+        { full: 'https://images.unsplash.com/photo-1514395462725-fb4566210144?w=1200', caption: '📍 Melbourne skyline at sunset' },
+        { full: 'https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=1200', caption: '☕ Melbourne\'s famous coffee culture' },
+        { full: 'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=1200', caption: '🎨 Hosier Lane street art' },
+        { full: 'https://images.unsplash.com/photo-1508317469940-e3de49ba902e?w=1200', caption: '🌊 St Kilda Beach' },
+        { full: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200', caption: '✨ City lights at night' }
+    ];
+    
+    let currentLightboxPhoto = 0;
+    
+    function openLightbox(index) {
+        currentLightboxPhoto = index;
+        updateLightbox();
+        document.getElementById('lightbox').classList.add('active');
+    }
+    
+    function closeLightbox(event) {
+        if (!event || event.target === document.getElementById('lightbox')) {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+    }
+    
+    function updateLightbox() {
+        const photo = galleryPhotos[currentLightboxPhoto];
+        document.getElementById('lightbox-img').src = photo.full;
+        document.getElementById('lightbox-caption').textContent = photo.caption;
+        document.getElementById('lightbox-counter').textContent = `${currentLightboxPhoto + 1} / ${galleryPhotos.length}`;
+    }
+    
+    function prevLightboxPhoto() {
+        if (currentLightboxPhoto > 0) {
+            currentLightboxPhoto--;
+            updateLightbox();
+        }
+    }
+    
+    function nextLightboxPhoto() {
+        if (currentLightboxPhoto < galleryPhotos.length - 1) {
+            currentLightboxPhoto++;
+            updateLightbox();
+        }
+    }
 </script>
 
 </body>
