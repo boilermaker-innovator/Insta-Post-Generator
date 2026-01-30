@@ -408,6 +408,59 @@
             align-items: center;
         }
         
+        /* Instagram Preview */
+        .insta-preview {
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .insta-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #000;
+        }
+        
+        .insta-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--brand-purple), var(--brand-primary), var(--brand-secondary));
+            border-radius: 50%;
+        }
+        
+        .insta-username {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+        
+        .insta-image {
+            width: 100%;
+            display: block;
+        }
+        
+        .insta-caption {
+            padding: 12px;
+            background: #000;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #fff;
+        }
+        
+        .insta-caption .insta-username {
+            margin-right: 6px;
+        }
+        
+        .insta-hashtags {
+            padding: 0 12px 12px;
+            background: #000;
+            font-size: 0.85rem;
+            color: #6bb3f8;
+            line-height: 1.6;
+        }
+        
         #imagePreview {
             max-width: 100%;
             max-height: 300px;
@@ -517,6 +570,25 @@
             </div>
             
             <div id="results" style="display: none;">
+                <!-- Instagram Preview -->
+                <div class="output-card" id="previewCard" style="display: none;">
+                    <div class="output-header">
+                        <span class="output-title">📱 Preview</span>
+                    </div>
+                    <div class="insta-preview">
+                        <div class="insta-header">
+                            <div class="insta-avatar"></div>
+                            <span class="insta-username">your_username</span>
+                        </div>
+                        <img id="previewImage" class="insta-image">
+                        <div class="insta-caption">
+                            <span class="insta-username">your_username</span>
+                            <span id="previewCaption"></span>
+                        </div>
+                        <div class="insta-hashtags" id="previewHashtags"></div>
+                    </div>
+                </div>
+                
                 <!-- Caption Output -->
                 <div class="output-card">
                     <div class="output-header">
@@ -735,6 +807,16 @@ HASHTAGS:
                 // Display results
                 document.getElementById('captionText').textContent = caption;
                 document.getElementById('hashtagText').textContent = hashtags;
+                
+                // Show preview if there's an image
+                if (uploadedImageBase64) {
+                    document.getElementById('previewImage').src = 'data:' + uploadedImageType + ';base64,' + uploadedImageBase64;
+                    document.getElementById('previewCaption').textContent = caption;
+                    document.getElementById('previewHashtags').textContent = hashtags;
+                    document.getElementById('previewCard').style.display = 'block';
+                } else {
+                    document.getElementById('previewCard').style.display = 'none';
+                }
                 
                 document.getElementById('loadingState').style.display = 'none';
                 document.getElementById('results').style.display = 'block';
